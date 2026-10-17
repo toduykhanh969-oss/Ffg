@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10151d">
+  <title>Thẩm Phán Tối Cao — Phán Quyết Của Bạn</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: light-dark(#f1f3f6, #0b1017);
+      --panel: light-dark(#ffffff, #131b25);
+      --panel2: light-dark(#f7f8fa, #182330);
+      --ink: light-dark(#1e2834, #ecf1f6);
+      --muted: light-dark(#687585, #9ba9b8);
+      --line: light-dark(#dbe1e8, #2a3746);
+      --gold: #d7b46a;
+      --gold2: light-dark(#876424, #f0cd7e);
+      --green: #5fb996;
+      --red: #e78383;
+      --blue: #8eadd8;
+      --shadow: 0 12px 35px rgba(0,0,0,.12);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    button, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .app { min-height: 100vh; background: var(--bg); }
+    .topbar { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px 22px; background:linear-gradient(110deg,#111923,#1a2633); color:#f7f4ed; border-bottom:1px solid #33404c; }
+    .brand { display:flex; gap:13px; align-items:center; min-width:0; }
+    .seal { width:46px; height:46px; flex:0 0 46px; display:grid; place-items:center; border:1px solid #c6a55f; border-radius:50%; color:#f0d18b; font-size:23px; background:rgba(215,180,106,.08); }
+    .brand h1 { margin:0; font-size:clamp(16px,2vw,21px); letter-spacing:.09em; font-weight:800; }
+    .brand p { margin:3px 0 0; color:#b8c1ca; font-size:12px; letter-spacing:.12em; text-transform:uppercase; }
+    .top-actions { display:flex; gap:9px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
+    .status { display:flex; align-items:center; gap:8px; font-size:12px; color:#dae2e9; padding:7px 10px; background:#263440; border:1px solid #3b4a58; border-radius:20px; }
+    .dot { width:8px; height:8px; border-radius:50%; background:#c7a760; box-shadow:0 0 0 3px #c7a76021; }
+    .status.online .dot { background:#69d3a3; box-shadow:0 0 0 3px #69d3a321; }
+    .top-btn { border:1px solid #596777; background:transparent; color:#f6f1e8; padding:8px 11px; border-radius:8px; font-size:12px; }
+    .top-btn:hover { background:#293744; }
+    .layout { display:grid; grid-template-columns: 250px minmax(0,1fr) 286px; gap:16px; max-width:1600px; margin:auto; padding:18px; align-items:start; }
+    .panel { background:var(--panel); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow); overflow:hidden; }
+    .panel-head { padding:14px 16px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .eyebrow { color:var(--gold2); font-size:10px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; }
+    .panel-head h2, .panel-head h3 { margin:2px 0 0; font-size:14px; }
+    .left-col, .right-col { display:grid; gap:14px; }
+    .case-title { padding:17px 16px 13px; }
+    .case-title .case-no { font-size:11px; letter-spacing:.16em; color:var(--gold2); font-weight:800; text-transform:uppercase; }
+    .case-title h2 { margin:8px 0 8px; font-family:Georgia,serif; font-size:23px; line-height:1.15; }
+    .tag { display:inline-flex; padding:4px 8px; border-radius:5px; font-size:10px; font-weight:750; letter-spacing:.06em; text-transform:uppercase; color:light-dark(#76551b,#f1d28c); background:light-dark(#f7efd9,#3b3324); border:1px solid light-dark(#eee0ba,#57482c); }
+    .case-summary { margin:13px 0 0; color:var(--muted); font-size:12px; }
+    .phase-list { padding:8px 12px 13px; }
+    .phase-item { display:flex; gap:10px; align-items:flex-start; padding:10px 7px; border-radius:8px; color:var(--muted); }
+    .phase-item.active { background:light-dark(#faf4e7,#302b20); color:var(--ink); }
+    .phase-item.done .phase-number { background:#397c66; border-color:#397c66; color:#fff; }
+    .phase-number { display:grid; place-items:center; width:25px; height:25px; flex:0 0 25px; border-radius:50%; border:1px solid var(--line); font-size:11px; font-weight:800; }
+    .phase-item.active .phase-number { border-color:var(--gold); background:#c8a452; color:#151a20; }
+    .phase-copy strong { display:block; font-size:12px; font-weight:750; }
+    .phase-copy span { display:block; font-size:10px; opacity:.8; margin-top:2px; }
+    .legal-note { padding:12px 14px 14px; color:var(--muted); font-size:11px; }
+    .legal-note strong { display:block; color:var(--ink); margin-bottom:4px; }
+    .legal-note a { color:var(--gold2); text-decoration:none; }
+    .main-col { min-width:0; }
+    .court-banner { min-height:85px; padding:17px 20px; background:linear-gradient(115deg,#202e3a,#121b24); color:#f6f4ee; display:flex; gap:15px; align-items:center; justify-content:space-between; border-bottom:1px solid #33414c; }
+    .court-banner .court-label { color:#d9ba78; font-size:10px; font-weight:800; letter-spacing:.18em; }
+    .court-banner h2 { margin:3px 0; font-family:Georgia,serif; font-size:21px; font-weight:600; }
+    .court-banner p { margin:0; color:#c0cbd4; font-size:11px; }
+    .court-stamp { border:1px solid #bba061; color:#e4ca8c; text-align:center; padding:9px 12px; min-width:84px; font-size:10px; font-weight:800; letter-spacing:.1em; transform:rotate(2deg); }
+    .feed-head { display:flex; gap:8px; justify-content:space-between; align-items:center; padding:12px 16px; background:var(--panel2); border-bottom:1px solid var(--line); }
+    .feed-head strong { font-size:12px; }
+    .feed-head span { color:var(--muted); font-size:11px; }
+    .chat-feed { height:min(57vh,650px); min-height:360px; overflow-y:auto; padding:16px; scroll-behavior:smooth; background:var(--panel); }
+    .message { margin:0 0 14px; display:flex; gap:10px; align-items:flex-start; }
+    .message.user { flex-direction:row-reverse; }
+    .avatar { flex:0 0 31px; width:31px; height:31px; border-radius:9px; display:grid; place-items:center; font-weight:800; font-size:11px; background:light-dark(#edf0f4,#263545); color:var(--muted); border:1px solid var(--line); }
+    .message.user .avatar { background:#c5a45c; color:#171a20; border-color:#c5a45c; }
+    .message-body { min-width:0; max-width:92%; }
+    .message-meta { display:flex; gap:8px; align-items:center; margin:0 0 5px; font-size:10px; color:var(--muted); }
+    .message.user .message-meta { justify-content:flex-end; }
+    .speaker { font-weight:800; color:var(--ink); font-size:11px; }
+    .bubble { border:1px solid var(--line); border-radius:4px 12px 12px 12px; padding:12px 14px; background:var(--panel2); font-size:13px; white-space:pre-wrap; overflow-wrap:anywhere; }
+    .message.user .bubble { background:light-dark(#fff8e9,#332b1b); border-color:light-dark(#eadbb7,#5b4a2b); border-radius:12px 4px 12px 12px; }
+    .bubble strong { color:var(--gold2); }
+    .msg-scores { font-size:10px; color:var(--muted); padding:5px 0 0; }
+    .typing { display:inline-flex; align-items:center; gap:6px; color:var(--muted); font-size:12px; padding:10px 0 3px; }
+    .typing i { width:5px; height:5px; background:var(--gold); border-radius:50%; animation:pulse 1s infinite alternate; }
+    .typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+    @keyframes pulse { from{opacity:.3;transform:translateY(0)} to{opacity:1;transform:translateY(-3px)} }
+    .composer { border-top:1px solid var(--line); padding:13px; background:var(--panel2); }
+    .composer-title { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:0 2px 8px; font-size:11px; color:var(--muted); }
+    .composer-title strong { color:var(--ink); }
+    .input-wrap { display:flex; gap:9px; align-items:stretch; }
+    textarea { flex:1; resize:vertical; min-height:72px; max-height:210px; padding:12px 13px; color:var(--ink); background:var(--panel); border:1px solid var(--line); border-radius:10px; outline:none; line-height:1.5; }
+    textarea:focus { border-color:#b69958; box-shadow:0 0 0 3px #b6995822; }
+    .send-btn { align-self:stretch; min-width:92px; padding:10px 14px; border:1px solid #c2a052; border-radius:10px; background:linear-gradient(145deg,#e6c879,#c49c43); color:#161b21; font-size:12px; font-weight:850; }
+    .send-btn:disabled { opacity:.55; cursor:wait; }
+    .hint { margin:8px 2px 0; color:var(--muted); font-size:10px; }
+    .stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:9px; padding:13px; }
+    .stat-card { padding:13px 12px; border:1px solid var(--line); border-radius:10px; background:var(--panel2); }
+    .stat-name { font-size:10px; color:var(--muted); line-height:1.3; min-height:27px; }
+    .stat-value { font-size:24px; margin:5px 0 9px; font-weight:800; letter-spacing:-.04em; }
+    .bar { height:4px; background:var(--line); border-radius:10px; overflow:hidden; }
+    .bar > div { height:100%; background:var(--gold); border-radius:10px; transition:width .35s ease; }
+    #reputationBar { background:var(--green); }
+    .people { padding:5px 13px 12px; }
+    .person { display:flex; align-items:center; gap:9px; padding:10px 0; border-bottom:1px solid var(--line); }
+    .person:last-child { border-bottom:0; }
+    .person-icon { width:32px; height:32px; flex:0 0 32px; display:grid; place-items:center; border-radius:9px; color:var(--gold2); background:light-dark(#f3efe5,#2c2b25); font-size:13px; font-weight:800; }
+    .person-details { min-width:0; flex:1; }
+    .person-details strong { display:block; font-size:11px; }
+    .person-details span { display:block; color:var(--muted); font-size:10px; margin-top:2px; }
+    .attendance { border-radius:4px; padding:3px 5px; font-size:9px; font-weight:800; background:light-dark(#e4f4ed,#1d3f33); color:light-dark(#2e775a,#9de0bf); }
+    .mini-btn { padding:9px 12px; width:100%; background:transparent; border:1px solid var(--line); color:var(--ink); border-radius:8px; font-size:11px; font-weight:750; }
+    .mini-btn:hover { border-color:var(--gold); }
+    .btn-stack { display:grid; gap:8px; padding:0 13px 13px; }
+    .footer { max-width:1600px; margin:0 auto; padding:0 18px 20px; display:flex; gap:12px; justify-content:space-between; flex-wrap:wrap; font-size:10px; color:var(--muted); }
+    .toast { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); max-width:calc(100vw - 30px); z-index:10; padding:10px 14px; border:1px solid var(--line); border-radius:10px; background:var(--panel); color:var(--ink); box-shadow:var(--shadow); font-size:12px; display:none; }
+    .toast.show { display:block; }
+    .modal-backdrop { display:none; position:fixed; inset:0; padding:18px; z-index:20; background:#0009; align-items:center; justify-content:center; }
+    .modal-backdrop.open { display:flex; }
+    .modal { width:min(620px,100%); background:var(--panel); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow); overflow:hidden; }
+    .modal-content { padding:17px; }
+    .modal-content p { color:var(--muted); font-size:12px; }
+    .modal-content code { color:var(--gold2); }
+    .modal-actions { display:flex; gap:8px; justify-content:flex-end; padding:0 17px 17px; }
+    .modal-actions button { border:1px solid var(--line); border-radius:8px; padding:9px 13px; background:var(--panel2); color:var(--ink); font-size:12px; }
+    @media(max-width:1120px){ .layout{grid-template-columns:220px minmax(0,1fr)} .right-col{grid-column:1/-1;grid-template-columns:1fr 1fr;} }
+    @media(max-width:760px){ .topbar{padding:12px;align-items:flex-start;flex-direction:column}.top-actions{justify-content:flex-start;width:100%}.layout{display:flex;flex-direction:column;padding:10px;gap:10px}.main-col{order:1;width:100%}.left-col{order:2;width:100%;grid-template-columns:1fr 1fr;align-items:start}.right-col{order:3;width:100%;grid-template-columns:1fr 1fr}.court-banner{padding:14px}.court-banner h2{font-size:18px}.court-stamp{min-width:65px;padding:7px;font-size:9px}.chat-feed{height:52vh;min-height:320px;padding:11px}.message-body{max-width:88%}.bubble{padding:10px 11px;font-size:12px}.composer{padding:10px}.input-wrap{flex-direction:column}.send-btn{min-height:42px}.case-title h2{font-size:20px}.footer{padding:0 10px 16px}}
+    @media(max-width:480px){.brand p{font-size:10px}.left-col,.right-col{grid-template-columns:1fr}.court-stamp{display:none}.chat-feed{height:52vh}.stat-value{font-size:22px}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="seal" aria-hidden="true">⚖</div>
+      <div><h1>THẨM PHÁN TỐI CAO</h1><p>Phán quyết của bạn · Courtroom RPG</p></div>
+    </div>
+    <div class="top-actions">
+      <div class="status" id="apiStatus"><span class="dot"></span><span id="apiStatusText">Đang kiểm tra kết nối…</span></div>
+      <button class="top-btn" id="exportBtn">⇩ Xuất biên bản</button>
+      <button class="top-btn" id="rulesBtn">ⓘ Hướng dẫn</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="left-col">
+      <section class="panel">
+        <div class="case-title">
+          <div class="case-no" id="caseNumber">Hồ sơ số 01 / 2026</div>
+          <h2 id="caseTitle">Cửa kho lúc 22 giờ 17</h2>
+          <span class="tag" id="caseTag">Hồ sơ hình sự giả lập</span>
+          <p class="case-summary" id="caseSummary">Một quản lý kho tử vong sau cuộc tranh cãi về khoản tiền hàng bị thất thoát. Camera bị gián đoạn; lời khai và mốc thời gian chưa khớp.</p>
+        </div>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><div><div class="eyebrow">Quy trình</div><h3>Tiến trình phiên tòa</h3></div></div>
+        <div class="phase-list" id="phaseList">
+          <div class="phase-item active" data-phase="1"><div class="phase-number">1</div><div class="phase-copy"><strong>Chuẩn bị & khai mạc</strong><span>Triệu tập, căn cước, quyền nghĩa vụ</span></div></div>
+          <div class="phase-item" data-phase="2"><div class="phase-number">2</div><div class="phase-copy"><strong>Xét hỏi tại tòa</strong><span>Hỏi cung công khai, kiểm tra chứng cứ</span></div></div>
+          <div class="phase-item" data-phase="3"><div class="phase-number">3</div><div class="phase-copy"><strong>Tranh luận</strong><span>Luận tội, bào chữa, đối đáp</span></div></div>
+          <div class="phase-item" data-phase="4"><div class="phase-number">4</div><div class="phase-copy"><strong>Nghị án & tuyên án</strong><span>Hội thẩm, phán quyết, tổng kết</span></div></div>
+        </div>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><div><div class="eyebrow">Căn cứ tham khảo</div><h3>Luật và lưu ý</h3></div></div>
+        <div class="legal-note">
+          <strong>Phiên tòa giả lập để học tập</strong>
+          Tình tiết và nhân vật là hư cấu. Đây không phải tư vấn pháp lý; khi cần viện dẫn chính xác, hãy đối chiếu văn bản hợp nhất đang có hiệu lực.
+          <p><a href="https://vbpl.moj.gov.vn/TW/Pages/vbpq-van-ban-goc.aspx?ItemID=96172" target="_blank" rel="noreferrer">Bộ luật Tố tụng hình sự · CSDL Bộ Tư pháp ↗</a></p>
+          <p><a href="https://chinhphu.vn/default.aspx?docid=183216&pageid=27160" target="_blank" rel="noreferrer">Bộ luật Hình sự · Cổng TT Chính phủ ↗</a></p>
+        </div>
+      </section>
+    </aside>
+
+    <section class="main-col panel">
+      <div class="court-banner">
+        <div><div class="court-label">TÒA ÁN HÌNH SỰ · PHIÊN TÒA SƠ THẨM</div><h2>Phòng xử án số 01</h2><p>Hội đồng xét xử đang chờ lệnh điều hành của Chủ tọa.</p></div>
+        <div class="court-stamp">HỒ SƠ<br>HƯ CẤU</div>
+      </div>
+      <div class="feed-head"><strong>BIÊN BẢN DIỄN BIẾN TRỰC TIẾP</strong><span id="phaseLabel">Giai đoạn 1 / 4</span></div>
+      <div class="chat-feed" id="chatFeed" aria-live="polite"></div>
+      <form class="composer" id="commandForm">
+        <div class="composer-title"><span><strong>Lệnh của Chủ tọa</strong> · Nhập tự do, không có lựa chọn A/B/C</span><span id="turnCounter">Lượt 0</span></div>
+        <div class="input-wrap">
+          <textarea id="commandInput" rows="3" maxlength="6000" placeholder="Ví dụ: Thư ký, báo cáo việc triệu tập và lý do người vắng mặt…" aria-label="Nhập lệnh hoặc câu hỏi của Thẩm phán"></textarea>
+          <button class="send-btn" id="sendBtn" type="submit">GỬI LỆNH ↗</button>
+        </div>
+        <div class="hint">Nhấn Enter để gửi · Shift + Enter để xuống dòng. Trò chơi không tự ý chuyển giai đoạn; chỉ chuyển khi Chủ tọa ra lệnh rõ ràng.</div>
+      </form>
+    </section>
+
+    <aside class="right-col">
+      <section class="panel">
+        <div class="panel-head"><div><div class="eyebrow">Ảnh hưởng công chúng</div><h3>Chỉ số phiên tòa</h3></div></div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-name">Áp lực dư luận</div><div class="stat-value" id="pressureVal">34%</div><div class="bar"><div id="pressureBar" style="width:34%"></div></div></div>
+          <div class="stat-card"><div class="stat-name">Thanh danh Thẩm phán</div><div class="stat-value" id="reputationVal">68<span style="font-size:13px;color:var(--muted)">/100</span></div><div class="bar"><div id="reputationBar" style="width:68%"></div></div></div>
+        </div>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><div><div class="eyebrow">Danh sách triệu tập</div><h3>Người tham gia tố tụng</h3></div></div>
+        <div class="people" id="peopleList">
+          <div class="person"><div class="person-icon">BC</div><div class="person-details"><strong>Trần Quốc Vinh</strong><span>Bị cáo</span></div><span class="attendance">CÓ MẶT</span></div>
+          <div class="person"><div class="person-icon">KS</div><div class="person-details"><strong>Nguyễn Bảo Trâm</strong><span>Kiểm sát viên</span></div><span class="attendance">CÓ MẶT</span></div>
+          <div class="person"><div class="person-icon">LS</div><div class="person-details"><strong>Nguyễn An Khải</strong><span>Luật sư bào chữa</span></div><span class="attendance">CÓ MẶT</span></div>
+          <div class="person"><div class="person-icon">BH</div><div class="person-details"><strong>Đỗ Thị Hạnh</strong><span>Đại diện bị hại</span></div><span class="attendance">CÓ MẶT</span></div>
+          <div class="person"><div class="person-icon">NC</div><div class="person-details"><strong>Vũ Thanh Phong</strong><span>Nhân chứng bảo vệ kho</span></div><span class="attendance">CÓ MẶT</span></div>
+          <div class="person"><div class="person-icon">NC</div><div class="person-details"><strong>Nguyễn Gia Bảo</strong><span>Nhân chứng ca đêm</span></div><span class="attendance" style="background:light-dark(#f9e8e5,#432622);color:light-dark(#a64a3d,#f0a79c)">VẮNG MẶT</span></div>
+        </div>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><div><div class="eyebrow">Công cụ Chủ tọa</div><h3>Quản lý phiên xử</h3></div></div>
+        <div class="btn-stack">
+          <button class="mini-btn" id="newCaseBtn">＋ Tạo vụ án mới bằng AI</button>
+          <button class="mini-btn" id="saveBtn">▣ Lưu tiến trình trên thiết bị</button>
+          <button class="mini-btn" id="clearBtn">↺ Khởi động lại Vụ án số 1</button>
+        </div>
+      </section>
+    </aside>
+  </main>
+  <div class="footer"><span>THẨM PHÁN TỐI CAO · Phiên bản web thử nghiệm</span><span>AI có thể sai về pháp luật. Phán quyết trong game là kết quả mô phỏng, không có giá trị pháp lý.</span></div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<div class="modal-backdrop" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+  <div class="modal">
+    <div class="panel-head"><div><div class="eyebrow">Trợ giúp nhanh</div><h3 id="helpTitle">Cách điều hành phiên tòa</h3></div><button class="top-btn" id="closeHelp">Đóng ×</button></div>
+    <div class="modal-content">
+      <p><strong>1. Gõ lệnh theo ý bạn.</strong> Bạn có thể hỏi Thư ký, bị cáo, nhân chứng, Kiểm sát viên, luật sư, chuyên gia giám định hoặc yêu cầu cung cấp tài liệu.</p>
+      <p><strong>2. Giữ quyền kiểm soát giai đoạn.</strong> Game chỉ chuyển từ chuẩn bị sang xét hỏi, tranh luận, rồi nghị án khi bạn ra lệnh cụ thể. Ví dụ: “Tôi tuyên bố kết thúc phần xét hỏi và chuyển sang tranh luận”.</p>
+      <p><strong>3. Chứng cứ ẩn và biến số.</strong> Nhân vật có trí nhớ, động cơ và mức độ đáng tin khác nhau. Yêu cầu đối chiếu mốc thời gian, vật chứng, chuỗi bảo quản, lời khai mâu thuẫn và yêu cầu giám định.</p>
+      <p><strong>4. AI trực tuyến.</strong> Để nhân vật trả lời bằng AI thật, cần triển khai máy chủ và cấu hình khóa API trong biến môi trường. Nếu mở riêng tệp HTML, game chạy ở chế độ mô phỏng minh họa.</p>
+      <p><strong>5. Luật pháp.</strong> Nội dung pháp lý phục vụ nhập vai/học tập, có thể không phản ánh đầy đủ văn bản sửa đổi mới nhất. Hãy tra cứu nguồn chính thức trước khi dùng ngoài đời thực.</p>
+    </div>
+    <div class="modal-actions"><button id="closeHelpBottom">Đã hiểu</button></div>
+  </div>
+</div>
+<script>
+(() => {
+  'use strict';
+  const INITIAL_CASE = {
+    id: 'case-1', number: 1,
+    title: 'Cửa kho lúc 22 giờ 17',
+    charge: 'Tội giết người — Điều 123 Bộ luật Hình sự (cáo trạng giả lập)',
+    summary: 'Một quản lý kho tử vong sau cuộc tranh cãi về khoản tiền hàng bị thất thoát. Camera bị gián đoạn; lời khai và mốc thời gian chưa khớp.',
+    participants: [
+      'Trần Quốc Vinh — Bị cáo — Có mặt',
+      'Nguyễn Bảo Trâm — Kiểm sát viên — Có mặt',
+      'Nguyễn An Khải — Luật sư bào chữa — Có mặt',
+      'Đỗ Thị Hạnh — Đại diện bị hại — Có mặt',
+      'Vũ Thanh Phong — Nhân chứng bảo vệ kho — Có mặt',
+      'Nguyễn Gia Bảo — Nhân chứng ca đêm — Vắng mặt; chưa xác minh đầy đủ lý do'
+    ]
+  };
+  const INITIAL_MESSAGE = `THƯ KÝ TÒA ÁN — BÁO CÁO CHUẨN BỊ PHÒNG XỬ\n\nKính báo cáo Chủ tọa: Thiết bị âm thanh đã được kiểm tra; micro tại bàn Hội đồng xét xử, vị trí Kiểm sát viên và luật sư hoạt động bình thường. Hồ sơ, danh sách triệu tập và tài liệu phục vụ phiên tòa đã được sắp xếp. Lực lượng bảo vệ tư pháp đã ổn định trật tự; những người tham dự được yêu cầu giữ im lặng và tuân theo nội quy phòng xử án.\n\nPhòng xử án đã sẵn sàng. Toàn thể những người có mặt đứng nghiêm trang. Kính mời Thẩm phán — Chủ tọa phiên tòa bước vào phòng xử án.\n\nBẢN TÓM TẮT SƠ BỘ HỒ SƠ VỤ ÁN SỐ 1\n• Tên vụ án: “Cửa kho lúc 22 giờ 17”.\n• Tội danh bị truy tố trong hồ sơ giả lập: Tội giết người — Điều 123 Bộ luật Hình sự (thông tin mô phỏng; cần đối chiếu văn bản hiện hành nếu học pháp luật chuyên sâu).\n• Người tham gia tố tụng: Bị cáo Trần Quốc Vinh — có mặt; Kiểm sát viên Nguyễn Bảo Trâm — có mặt; Luật sư bào chữa Nguyễn An Khải — có mặt; đại diện bị hại Đỗ Thị Hạnh — có mặt; nhân chứng bảo vệ kho Vũ Thanh Phong — có mặt; nhân chứng ca đêm Nguyễn Gia Bảo — vắng mặt, lý do chưa được xác minh đầy đủ trong bản tóm tắt ban đầu.\n• Diễn biến theo hồ sơ ban đầu: Đêm 14/08/2026, ông Đỗ Hữu Phúc, quản lý kho Minh Phát, được phát hiện đã tử vong sau ca làm việc. Hồ sơ cho rằng trước đó ông Phúc và bị cáo Vinh có tranh cãi liên quan đến khoản tiền hàng bị thất thoát. Camera ghi nhận bị cáo xuất hiện tại khu kho, nhưng đoạn ghi hình quan trọng bị gián đoạn và mốc thời gian đang bị tranh cãi. Chưa tìm thấy vật chứng quyết định; lời khai giữa những người liên quan có điểm chưa thống nhất. Bị cáo phủ nhận hành vi giết người.\n• Chỉ số ban đầu: Áp lực dư luận 34% | Thanh danh Thẩm phán 68/100.\n\nTôi xin đứng đúng vị trí Thư ký, chờ lệnh của Chủ tọa. Tôi sẽ không tự ý tuyên bố khai mạc hay chuyển sang giai đoạn tiếp theo.`;
+  const state = {
+    apiAvailable: false, apiReady: false, phase: 1, pressure: 34, reputation: 68,
+    caseData: INITIAL_CASE, messages: [], turnCount: 0, busy: false, mode: 'demo'
+  };
+  const $ = id => document.getElementById(id);
+  const feed = $('chatFeed');
+  const escapeHTML = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  function toast(text) { const el=$('toast'); el.textContent=text; el.classList.add('show'); clearTimeout(toast.timer); toast.timer=setTimeout(()=>el.classList.remove('show'),3300); }
+  function currentStageName() { return ['','Chuẩn bị khai mạc & triệu tập','Xét hỏi tại tòa','Tranh luận công khai','Nghị án & tuyên án'][state.phase]; }
+  function updateStatus() {
+    const el=$('apiStatus');
+    el.classList.toggle('online', state.apiReady);
+    $('apiStatusText').textContent = state.apiReady ? `AI trực tuyến · ${state.model || 'đã kết nối'}` : (state.apiAvailable ? 'Máy chủ kết nối · thiếu API key' : 'Chế độ mô phỏng · chưa kết nối AI');
+  }
+  function updateStats() {
+    state.pressure = Math.max(0,Math.min(100,Number(state.pressure)||0));
+    state.reputation = Math.max(0,Math.min(100,Number(state.reputation)||0));
+    $('pressureVal').textContent = state.pressure + '%';
+    $('pressureBar').style.width = state.pressure + '%';
+    $('reputationVal').innerHTML = `${state.reputation}<span style="font-size:13px;color:var(--muted)">/100</span>`;
+    $('reputationBar').style.width = state.reputation + '%';
+  }
+  function updateCase() {
+    const c=state.caseData || INITIAL_CASE;
+    $('caseTitle').textContent=c.title || INITIAL_CASE.title;
+    $('caseNumber').textContent=`Hồ sơ số ${String(c.number || 1).padStart(2,'0')} / 2026`;
+    $('caseSummary').textContent=(c.summary || INITIAL_CASE.summary) + (c.charge ? `\nCáo trạng giả lập: ${c.charge}` : '');
+    $('peopleList').innerHTML='';
+    const people=c.participants || INITIAL_CASE.participants;
+    people.forEach((item,i)=>{
+      const bits=String(item).split(' — '); const name=bits[0] || 'Người tham gia'; const role=bits[1] || ''; const presence=bits[2] || (i===5?'Vắng mặt':'Có mặt');
+      const absent=/vắng|absent/i.test(presence);
+      const initials=name.split(/\s+/).slice(-2).map(x=>x[0]||'').join('').toUpperCase();
+      const div=document.createElement('div'); div.className='person';
+      div.innerHTML=`<div class="person-icon">${escapeHTML(initials)}</div><div class="person-details"><strong>${escapeHTML(name)}</strong><span>${escapeHTML(role)}</span></div><span class="attendance" ${absent?'style="background:light-dark(#f9e8e5,#432622);color:light-dark(#a64a3d,#f0a79c)"':''}>${absent?'VẮNG MẶT':'CÓ MẶT'}</span>`;
+      $('peopleList').appendChild(div);
+    });
+  }
+  function updatePhases() {
+    document.querySelectorAll('.phase-item').forEach(el=>{
+      const p=Number(el.dataset.phase); el.classList.toggle('active',p===state.phase); el.classList.toggle('done',p<state.phase);
+    });
+    $('phaseLabel').textContent=`Giai đoạn ${state.phase} / 4 · ${currentStageName()}`;
+  }
+  function renderMessages() {
+    feed.innerHTML='';
+    state.messages.forEach((m,i)=>{
+      const isUser=m.role==='user'; const wrap=document.createElement('div'); wrap.className='message '+(isUser?'user':'assistant');
+      const av=document.createElement('div'); av.className='avatar'; av.textContent=isUser?'CT':(m.speaker==='AI'?'GM':'TK');
+      const body=document.createElement('div'); body.className='message-body';
+      const meta=document.createElement('div'); meta.className='message-meta';
+      const role=document.createElement('span'); role.className='speaker'; role.textContent=isUser?'CHỦ TỌA':(m.speaker || 'THƯ KÝ / QUẢN TRÒ');
+      const time=document.createElement('span'); time.textContent=m.time || '';
+      meta.append(role,time);
+      const bubble=document.createElement('div'); bubble.className='bubble'; bubble.textContent=m.content;
+      body.append(meta,bubble);
+      if(!isUser && m.score) { const score=document.createElement('div'); score.className='msg-scores'; score.textContent=`Áp lực dư luận: ${m.score.pressure}%  |  Thanh danh Thẩm phán: ${m.score.reputation}/100`; body.append(score); }
+      wrap.append(av,body); feed.appendChild(wrap);
+    });
+    $('turnCounter').textContent=`Lượt ${state.turnCount}`;
+    feed.scrollTop=feed.scrollHeight;
+  }
+  function saveState() {
+    const copy={phase:state.phase,pressure:state.pressure,reputation:state.reputation,caseData:state.caseData,messages:state.messages,turnCount:state.turnCount,mode:state.mode};
+    try { localStorage.setItem('thamPhanToiCaoSave',JSON.stringify(copy)); } catch(_){ }
+  }
+  function loadState() {
+    try {
+      const raw=localStorage.getItem('thamPhanToiCaoSave'); if(!raw) return false;
+      const s=JSON.parse(raw); if(!s || !Array.isArray(s.messages) || !s.messages.length) return false;
+      state.phase=Math.max(1,Math.min(4,Number(s.phase)||1)); state.pressure=Number(s.pressure)||34; state.reputation=Number(s.reputation)||68; state.caseData=s.caseData||INITIAL_CASE; state.messages=s.messages; state.turnCount=Number(s.turnCount)||0; state.mode=s.mode||'demo'; return true;
+    } catch(_){ return false; }
+  }
+  function addMessage(role,content,extra={}) {
+    const now=new Date(); const time=now.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
+    state.messages.push({role,content,time,...extra});
+    if(state.messages.length>160) state.messages=state.messages.slice(-160);
+    renderMessages(); saveState();
+  }
+  function resetGame(c=INITIAL_CASE) {
+    state.phase=1; state.pressure=34; state.reputation=68; state.caseData=c; state.turnCount=0; state.messages=[]; state.mode=state.apiReady?'ai':'demo';
+    addMessage('assistant', c.id==='case-1' ? INITIAL_MESSAGE : `THƯ KÝ TÒA ÁN — BÁO CÁO CHUẨN BỊ PHÒNG XỬ\n\nThiết bị âm thanh đã được kiểm tra, trật tự phòng xử án đã ổn định. Kính mời Thẩm phán — Chủ tọa phiên tòa bước vào.\n\nBẢN TÓM TẮT SƠ BỘ HỒ SƠ VỤ ÁN SỐ ${c.number || 2}\n• Tên vụ án: ${c.title}\n• Tội danh giả lập: ${c.charge}\n• Người tham gia được triệu tập:\n${(c.participants||[]).map(p=>'  - '+p).join('\n')}\n• Tóm tắt ban đầu: ${c.summary}\n• Chỉ số ban đầu: Áp lực dư luận 34% | Thanh danh Thẩm phán 68/100.\n\nTôi xin đứng đúng vị trí Thư ký, nghiêm trang chờ lệnh khai mạc. Tôi sẽ không tự ý chuyển bước.`, {speaker:'THƯ KÝ',score:{pressure:34,reputation:68}});
+    updateStats(); updatePhases(); updateCase(); renderMessages(); saveState();
+  }
+  function detectPhase(text) {
+    const t=String(text).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    let next=state.phase;
+    if(state.phase===1 && (/chuyen sang (phan )?xet hoi/.test(t) || /bat dau (phan )?xet hoi/.test(t))) next=2;
+    else if(state.phase===2 && (/chuyen sang (phan )?tranh luan/.test(t) || /ket thuc (phan )?xet hoi/.test(t) || /bat dau (phan )?tranh luan/.test(t))) next=3;
+    else if(state.phase===3 && (/(vao|chuyen sang|bat dau) nghi an/.test(t) || /ket thuc (phan )?tranh luan/.test(t))) next=4;
+    if(next!==state.phase){state.phase=next; updatePhases(); toast(`Đã ghi nhận lệnh chuyển sang giai đoạn ${next}: ${currentStageName()}.`);}
+  }
+  function extractScores(text) {
+    const re=/\[\[SCORES\s+pressure=(\d{1,3})\s+reputation=(\d{1,3})\s*\]\]/i; const match=text.match(re);
+    if(match){state.pressure=Math.max(0,Math.min(100,Number(match[1])));state.reputation=Math.max(0,Math.min(100,Number(match[2])));return {content:text.replace(re,'').trim(), score:{pressure:state.pressure,reputation:state.reputation}};}
+    return {content:text.trim(),score:{pressure:state.pressure,reputation:state.reputation}};
+  }
+  function demoReply(command) {
+    const t=command.toLowerCase();
+    if(/khai mạc|khai mac/.test(t) && state.phase===1) return `THƯ KÝ TÒA ÁN: (đứng nghiêm, nhìn về phía Hội đồng xét xử) Kính thưa Chủ tọa, những người được triệu tập đã được kiểm tra theo danh sách sơ bộ. Một nhân chứng đang vắng mặt và lý do chưa được xác minh đầy đủ.\n\nPhòng xử án giữ im lặng. Kiểm sát viên Nguyễn Bảo Trâm mở tập hồ sơ, đánh dấu vào bản cáo trạng. Luật sư Nguyễn An Khải ghé sát bị cáo, nói nhỏ vài lời. Đại diện bị hại siết chặt hai bàn tay, liên tục nhìn về phía bục xét xử.\n\nTôi chờ chỉ đạo tiếp theo của Chủ tọa. Ghi chú: đây là phản hồi minh họa ngoại tuyến; hãy cấu hình máy chủ AI để có nhân vật tự phản ứng linh hoạt.`;
+    if(/nhân chứng|nhan chung|vũ thanh phong|vu thanh phong/.test(t)) return `VŨ THANH PHONG — NHÂN CHỨNG: (nuốt khan, mắt thoáng nhìn về phía Kiểm sát viên) “Tôi chỉ nghe tiếng cãi vã ở khu xuất hàng. Tôi không nhìn rõ ai rời khỏi kho lúc nào; đồng hồ treo tường và màn hình camera hôm đó không hoàn toàn trùng nhau.”\n\nKiểm sát viên ngẩng lên định hỏi tiếp; luật sư lập tức ghi một dòng vào sổ tay. Câu trả lời này chỉ là khung mô phỏng, chưa phải lời khai hoàn chỉnh.`;
+    if(/bị cáo|bi cao|trần quốc vinh|tran quoc vinh/.test(t)) return `TRẦN QUỐC VINH — BỊ CÁO: (hai bàn tay đan chặt, giọng căng) “Tôi có tranh cãi với anh Phúc về khoản tiền hàng, nhưng tôi không giết anh ấy. Tôi biết hồ sơ nói camera ghi tôi ở đó, nhưng thời gian trên đoạn ghi hình cần được kiểm tra lại.”\n\nBị cáo ngước lên nhìn Chủ tọa rồi cúi xuống. Luật sư nghiêng người nhắc thân chủ trả lời đúng câu hỏi. Phần trả lời hiện đang chạy ở chế độ minh họa ngoại tuyến.`;
+    if(/kết thúc|ket thuc|chuyển sang|chuyen sang/.test(t)) return `THƯ KÝ TÒA ÁN: Tôi đã ghi nhận mệnh lệnh của Chủ tọa trong biên bản mô phỏng. Tuy nhiên, ở chế độ ngoại tuyến, tôi chỉ có thể minh họa quy trình; cần máy chủ AI hoạt động để đánh giá căn cứ pháp lý và phản ứng đa chiều nhất quán.\n\nHội đồng xét xử vẫn giữ nguyên giai đoạn hiện tại trừ khi lệnh chuyển bước của Chủ tọa được xác định rõ ràng.`;
+    return `THƯ KÝ TÒA ÁN: (đứng tại vị trí, mở sổ ghi biên bản) Tôi đã ghi nhận yêu cầu của Chủ tọa: “${command}”.\n\nỞ chế độ ngoại tuyến, bản demo chưa có mô hình AI để nhập vai tự do hoặc kiểm tra toàn bộ hồ sơ mật. Để các nhân vật trả lời linh hoạt qua Internet, hãy triển khai kèm máy chủ và cấu hình OPENAI_API_KEY theo hướng dẫn trong README. Không có giai đoạn nào tự động kết thúc trong lúc chờ lệnh của Chủ tọa.`;
+  }
+  async function sendCommand(command) {
+    if(state.busy) return;
+    command=String(command||'').trim(); if(!command) return;
+    state.busy=true; $('sendBtn').disabled=true; $('commandInput').disabled=true;
+    addMessage('user',command); detectPhase(command); state.turnCount++; updatePhases(); updateStats();
+    const typing=document.createElement('div'); typing.className='typing'; typing.id='typingIndicator'; typing.innerHTML='Quản trò đang xử lý phản ứng nhân vật <i></i><i></i><i></i>'; feed.appendChild(typing);feed.scrollTop=feed.scrollHeight;
+    try {
+      let answer='';
+      if(state.apiReady) {
+        const payload={caseId:state.caseData.id||'case-1',phase:state.phase,pressure:state.pressure,reputation:state.reputation,messages:state.messages.filter(m=>m.role==='user'||m.role==='assistant').slice(-44).map(m=>({role:m.role,content:m.content}))};
+        const res=await fetch('/api/turn',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        const data=await res.json().catch(()=>({}));
+        if(!res.ok) throw new Error(data.error||`Máy chủ trả về mã ${res.status}`);
+        answer=data.text||'Quản trò không nhận được nội dung phản hồi.';
+      } else answer=demoReply(command);
+      const parsed=extractScores(answer);
+      $('typingIndicator')?.remove();
+      addMessage('assistant',parsed.content || answer,{speaker:state.apiReady?'QUẢN TRÒ AI':'QUẢN TRÒ · DEMO',score:parsed.score});
+      updateStats();saveState();
+    } catch(err) {
+      $('typingIndicator')?.remove();
+      const message=`Không gọi được AI: ${err.message || 'lỗi kết nối'}.\n\nLệnh của Chủ tọa vẫn được giữ trong biên bản. Kiểm tra máy chủ, khóa API và hạn mức sử dụng rồi thử lại.`;
+      addMessage('assistant',message,{speaker:'THÔNG BÁO HỆ THỐNG',score:{pressure:state.pressure,reputation:state.reputation}});
+      toast('Chưa nhận được phản hồi AI. Biên bản đã được giữ lại.');
+    } finally {
+      state.busy=false; $('sendBtn').disabled=false; $('commandInput').disabled=false; $('commandInput').focus(); updateStats(); updatePhases(); saveState();
+    }
+  }
+  async function checkServer() {
+    try {
+      const r=await fetch('/api/health',{cache:'no-store'}); if(!r.ok) throw new Error('not ok');
+      const d=await r.json(); state.apiAvailable=true; state.apiReady=!!d.configured; state.model=d.model||'';
+      if(state.apiReady){
+        state.mode='ai';
+        try { const cr=await fetch('/api/case',{cache:'no-store'}); if(cr.ok){const cd=await cr.json(); if(cd && cd.case && (!state.messages.length || state.caseData.id==='case-1')) { if(!localStorage.getItem('thamPhanToiCaoSave')) {state.caseData=cd.case;updateCase();} } } } catch(_){ }
+      }
+    } catch(_) { state.apiAvailable=false;state.apiReady=false;state.mode='demo'; }
+    updateStatus();
+    if(!state.apiReady) {
+      $('apiStatusText').textContent=state.apiAvailable?'Máy chủ chạy · chưa có API key':'Mở HTML trực tiếp · demo ngoại tuyến';
+    }
+  }
+  async function createNewCase() {
+    if(!state.apiReady){toast('Tính năng tạo vụ án mới cần AI trực tuyến. Hãy triển khai máy chủ trước.');return;}
+    if(!confirm('Tạo vụ án mới? Tiến trình của vụ án hiện tại sẽ được lưu trong lịch sử trình duyệt, nhưng màn chơi sẽ chuyển sang hồ sơ mới.')) return;
+    $('newCaseBtn').disabled=true; $('newCaseBtn').textContent='Đang xây dựng hồ sơ…';
+    try {
+      const r=await fetch('/api/new-case',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({previousTitle:state.caseData.title||''})});
+      const d=await r.json(); if(!r.ok) throw new Error(d.error||'Không tạo được hồ sơ');
+      localStorage.setItem('thamPhanToiCaoPreviousSave',localStorage.getItem('thamPhanToiCaoSave')||'');
+      resetGame(d.case); toast('Hồ sơ mới đã sẵn sàng. Thẩm phán kiểm soát việc chuyển bước như thường lệ.');
+    } catch(e){toast(e.message||'Không thể tạo vụ án mới.');}
+    finally{$('newCaseBtn').disabled=false;$('newCaseBtn').textContent='＋ Tạo vụ án mới bằng AI';}
+  }
+  function exportTranscript() {
+    const c=state.caseData||INITIAL_CASE;
+    const text=`THẨM PHÁN TỐI CAO — BIÊN BẢN MÔ PHỎNG\n${c.title}\nGiai đoạn: ${currentStageName()}\nÁp lực dư luận: ${state.pressure}% | Thanh danh: ${state.reputation}/100\n\n`+state.messages.map(m=>`[${m.time||''}] ${m.role==='user'?'CHỦ TỌA':(m.speaker||'QUẢN TRÒ')}\n${m.content}`).join('\n\n----------------------------------------\n\n');
+    const blob=new Blob([text],{type:'text/plain;charset=utf-8'}); const url=URL.createObjectURL(blob); const a=document.createElement('a');a.href=url;a.download='bien-ban-tham-phan-toi-cao.txt';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);toast('Đã xuất biên bản dạng TXT.');
+  }
+  $('commandForm').addEventListener('submit',e=>{e.preventDefault();const val=$('commandInput').value;$('commandInput').value='';sendCommand(val);});
+  $('commandInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('commandForm').requestSubmit();}});
+  $('exportBtn').addEventListener('click',exportTranscript);
+  $('saveBtn').addEventListener('click',()=>{saveState();toast('Đã lưu tiến trình trên trình duyệt của thiết bị này.');});
+  $('clearBtn').addEventListener('click',()=>{if(confirm('Khởi động lại Vụ án số 1? Tiến trình trên màn hình sẽ được thay thế.')){localStorage.removeItem('thamPhanToiCaoSave');resetGame(INITIAL_CASE);toast('Đã khởi động lại Vụ án số 1.');}});
+  $('newCaseBtn').addEventListener('click',createNewCase);
+  const modal=$('helpModal'); $('rulesBtn').addEventListener('click',()=>modal.classList.add('open'));$('closeHelp').addEventListener('click',()=>modal.classList.remove('open'));$('closeHelpBottom').addEventListener('click',()=>modal.classList.remove('open'));modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open');});
+  if(!loadState()) resetGame(INITIAL_CASE); else {updateCase();updateStats();updatePhases();renderMessages();}
+  checkServer();
+})();
+</script>
+</body>
+</html>
